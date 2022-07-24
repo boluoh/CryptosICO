@@ -4,7 +4,6 @@ const { ethers } = require("hardhat");
 
 describe("Cryptos ICO", function () {
 
-    let CryptosICO;
     let ico;
     let owner;
     let deposit;
@@ -13,18 +12,15 @@ describe("Cryptos ICO", function () {
 
     beforeEach(async function () {
         // Get the ContractFactory and Signers here.
-        CryptosICO = await ethers.getContractFactory("CryptosICO");
+        const CryptosICO = await ethers.getContractFactory("CryptosICO");
         [owner, deposit, addr1, ...addrs] = await ethers.getSigners();
 
         // To deploy our contract, we just have to call Token.deploy() and await
         // for it to be deployed(), which happens onces its transaction has been
         // mined.
-        ico = await CryptosICO.deploy(deposit);
+        ico = await CryptosICO.deploy(deposit.getAddress());
         await ico.deployed();
 
-        // We can interact with the contract by calling `hardhatToken.method()`
-        console.log(ico.totalSupply());
-        // await ico.deployed();
     });
 
     describe("Deployment", function () {
@@ -42,12 +38,12 @@ describe("Cryptos ICO", function () {
 
 
         it("Should assign the total supply of tokens to the owner", async function () {
-            const ownerBalance = await hardhatToken.balanceOf(owner.getAddress());
-            expect(await hardhatToken.totalSupply()).to.equal(ownerBalance);
+            const ownerBalance = await ico.balanceOf(owner.getAddress());
+            expect(await ico.totalSupply()).to.equal(ownerBalance);
         });
 
         it("Should init cryptos with 10000 token", async function () {
-            expect(await hardhatToken.totalSupply()).to.equal(10000);
+            expect(await ico.totalSupply()).to.equal(10000);
         });
     });
 

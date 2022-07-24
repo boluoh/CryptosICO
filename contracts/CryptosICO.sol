@@ -102,14 +102,7 @@ contract CryptosICO is Cryptos {
         uint256 value
     ) public override returns (bool) {
         require(block.timestamp > tokenTradeStart);
-        require(value <= balances[from]);
-        require(value <= _allowed[from][msg.sender]);
-        require(to != address(0));
-        balances[from] = balances[from].sub(value);
-        balances[to] = balances[to].add(value);
-        _allowed[from][msg.sender] = _allowed[from][msg.sender].sub(value);
-        emit Transfer(from, to, value);
-        return true;
+        return super.transferFrom(from, to, value);
     }
 
     function transfer(address to, uint256 value)
@@ -118,13 +111,7 @@ contract CryptosICO is Cryptos {
         returns (bool)
     {
         require(block.timestamp > tokenTradeStart);
-        require(value <= balances[msg.sender]);
-        require(to != address(0));
-
-        balances[msg.sender] = balances[msg.sender].sub(value);
-        balances[to] = balances[to].add(value);
-        emit Transfer(msg.sender, to, value);
-        return true;
+        return super.transfer(to, value);
     }
 
     receive() external payable {
