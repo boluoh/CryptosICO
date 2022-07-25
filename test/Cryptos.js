@@ -88,6 +88,24 @@ describe("Cryptos ICO", function () {
 
             await expect(ico.connect(addr1).transfer(addr2.getAddress(), 1000)).to.be.revertedWith("not yet tokenTradeStart");
         });
+        it("Should success transaction after 2weeks", async function () {
+            expect(await ico.connect(addr1).invest({ value: ethers.utils.parseEther("1") }));
+            expect(await ico.connect(addr2).invest({ value: ethers.utils.parseEther("2") }));
+            expect(await ico.connect(addr3).invest({ value: ethers.utils.parseEther("2") }));
+            expect(await ico.raisedAmount()).to.equal(ethers.utils.parseEther("5"));
+            expect(await ico.balanceOf(addr1.getAddress())).to.equal(1000);
+            expect(await ico.balanceOf(addr2.getAddress())).to.equal(2000);
+            expect(await ico.balanceOf(addr3.getAddress())).to.equal(2000);
+
+            await ethers.provider.send('evm_increaseTime', [604800 + 604800]);
+            // await ethers.provider.send('evm_mine');
+            
+            expect(await ico.connect(addr1).transfer(addr2.getAddress(), 1000));
+            expect(await ico.balanceOf(addr1.getAddress())).to.equal(0);
+            expect(await ico.balanceOf(addr2.getAddress())).to.equal(3000);
+            expect(await ico.raisedAmount()).to.equal(ethers.utils.parseEther("5"));
+            
+        });
     });
 
 
