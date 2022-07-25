@@ -10,7 +10,7 @@ contract CryptosICO is Cryptos {
     address public admin;
     address payable public deposit;
     uint tokenPrice = 0.001 ether;
-    uint public hardCap = 300 ether;
+    uint public hardCap = 5 ether;
     uint public raisedAmount;
     uint public saleStart = block.timestamp;
     uint public saleEnd = block.timestamp + 604800;
@@ -47,7 +47,7 @@ contract CryptosICO is Cryptos {
     modifier validInvestValue() {
         require(
             msg.value >= minInvestment && msg.value <= maxInvestment,
-            "invest value must in 0.1 ether and 5 ether"
+            "invest value must between 0.1 ether and 5 ether"
         );
         _;
     }
@@ -83,7 +83,8 @@ contract CryptosICO is Cryptos {
         validInvestValue
         returns (bool)
     {
-        require(raisedAmount + msg.value <= hardCap);
+        raisedAmount += msg.value;
+        require(raisedAmount <= hardCap, "over hardCap");
 
         uint tokens = msg.value / tokenPrice;
 
@@ -101,7 +102,7 @@ contract CryptosICO is Cryptos {
         address to,
         uint256 value
     ) public override returns (bool) {
-        require(block.timestamp > tokenTradeStart);
+        require(block.timestamp > tokenTradeStart, "not yet tokenTradeStart");
         return super.transferFrom(from, to, value);
     }
 
@@ -110,7 +111,7 @@ contract CryptosICO is Cryptos {
         override
         returns (bool)
     {
-        require(block.timestamp > tokenTradeStart);
+        require(block.timestamp > tokenTradeStart, "not yet tokenTradeStart");
         return super.transfer(to, value);
     }
 
